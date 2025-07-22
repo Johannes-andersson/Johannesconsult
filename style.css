@@ -463,6 +463,34 @@ body {
     transform: translateY(-2px);
 }
 
+/* Privacy Footer */
+.privacy-footer {
+    background: rgba(0, 0, 0, 0.02);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.privacy-footer p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: rgba(51, 51, 51, 0.6);
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    line-height: 1.5;
+}
+
+.privacy-footer a {
+    color: #007AFF;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.privacy-footer a:hover {
+    color: #0056CC;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
     .hero-content {

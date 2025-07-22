@@ -1,5 +1,68 @@
-// Smooth scroll animation
+// Security and validation utilities
+const SecurityUtils = {
+    // Basic XSS protection - sanitize user inputs
+    sanitizeInput: function(input) {
+        if (typeof input !== 'string') return input;
+        return input.replace(/[<>\"']/g, function(match) {
+            const entityMap = {
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#x27;'
+            };
+            return entityMap[match];
+        });
+    },
+    
+    // Rate limiting for form submissions
+    rateLimiter: {
+        attempts: {},
+        maxAttempts: 3,
+        timeWindow: 300000, // 5 minutes
+        
+        isAllowed: function(identifier) {
+            const now = Date.now();
+            const userAttempts = this.attempts[identifier] || [];
+            
+            // Clean old attempts
+            const recentAttempts = userAttempts.filter(timestamp => 
+                now - timestamp < this.timeWindow
+            );
+            
+            this.attempts[identifier] = recentAttempts;
+            
+            return recentAttempts.length < this.maxAttempts;
+        },
+        
+        recordAttempt: function(identifier) {
+            if (!this.attempts[identifier]) {
+                this.attempts[identifier] = [];
+            }
+            this.attempts[identifier].push(Date.now());
+        }
+    }
+};
+
+// Form security monitoring
 document.addEventListener('DOMContentLoaded', function() {
+    // Monitor form links for security
+    document.querySelectorAll('[data-form-link="secure"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            const userAgent = navigator.userAgent;
+            const identifier = userAgent.slice(0, 20); // Simple identifier
+            
+            if (!SecurityUtils.rateLimiter.isAllowed(identifier)) {
+                e.preventDefault();
+                console.warn('Rate limit exceeded for form access');
+                alert('Too many attempts. Please wait a few minutes before trying again.');
+                return false;
+            }
+            
+            SecurityUtils.rateLimiter.recordAttempt(identifier);
+        });
+    });
+
+// Smooth scroll animation
     // Smooth scrolling for navigation links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
